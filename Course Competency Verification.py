@@ -144,7 +144,9 @@ for row in csvData:
     [newSection.courseComps.append(competency(_competency)) for _competency in courseComps if _competency.strip() != '']
     sectionDataList.append(newSection)
 
-[print(sect) for sect in sectionDataList]
+#I'd like to print these out first for diagnostics, but not until they don't look weird. 
+#Need to change __repr__ for the competencies class. 
+#[print(sect) for sect in sectionDataList]
 
 #this is a function for grabbing info from a word document in the form of a tuple: ('document title (no extension)','document text (stripped)')
 import zipfile
