@@ -21,17 +21,27 @@ class sectionData(courseData):
         self.sectionID = ''
         self.matched = False
     def courseMatch(self, courseTitleStr,documentText=None) -> bool:
-        print(f'Running courseMatch on {courseTitleStr}...',end='')
+        print(f'Running courseMatch on {courseTitleStr}... ',end='')
+        print(f'INFORMATION: {self.courseNumber}')
         #for courseTitleDigitsList: getting longest consecutive sequence of digits
         #replace all non-digits with a space ' '
         #then, resplit that new string into a list of integers based on the spaces
         #convert to integers, remove spaces
         #so 'COM 1812 8-16-2014' -> [1812,8,16,2014]
         courseTitleDigitsList = ''.join([(char) if char.isdigit() else ' ' for char in courseTitleStr]).split(' ')
-        while '' in courseTitleDigitsList: courseTitleDigitsList.remove('')
-        courseTitleDigitsList = [int(item) for item in courseTitleDigitsList]
-        #print(f'{self.courseNumber} in {courseTitleDigitsList} and {self.subject.lower()} in {courseTitleStr.lower()}')
-        #print(f'{int(self.courseNumber) in courseTitleDigitsList and self.subject.lower() in courseTitleStr.lower()}')
+        while '' in courseTitleDigitsList: 
+            print('REMOVING SOME WHITESPACE....')
+            courseTitleDigitsList.remove('')
+        print(courseTitleDigitsList)
+        #courseTitleDigitsList = [int(number) for number in courseTitleDigitsList]
+        newcourseTitleDigitsList = []
+        for item in courseTitleDigitsList:
+            print(f'{item} -> {int(item)}')
+            newcourseTitleDigitsList.append(int(item))
+        courseTitleDigitsList = newcourseTitleDigitsList
+        print(courseTitleDigitsList)
+        print(f'{self.courseNumber} in {courseTitleDigitsList} and {self.subject.lower()} in {courseTitleStr.lower()}')
+        print(f'{int(self.courseNumber) in courseTitleDigitsList and self.subject.lower() in courseTitleStr.lower()}')
         matched = int(self.courseNumber) in courseTitleDigitsList and self.subject.lower() in courseTitleStr.lower()
         print(f'Current course: {self.subject}{self.courseNumber} | Matched Course: {courseTitleStr}' if matched else 'Failed \r')
         if matched: self.matched = True
@@ -128,18 +138,27 @@ with open('.env') as envFile:
 
 [print(f'{key}: {envDict[key]}') for key in envDict]
 
-#gets our CSV file as list of dictionaries
+#get our CSV file as list of dictionaries
 sectionsSource = envDict['sectionsSource']
 with open(sectionsSource,'r',encoding='ISO-8859-1') as csvFile: #encoding is required for many CSV files
     csvData = [row for row in csv.DictReader(csvFile)]
 
-#now we generate a list of sectionData() objects, with courseCompetencies stripped
+#now we generate a list of sectionData() objects, with courseCompetencies stripped of newlines and other content
 sectionDataList = []
 for row in csvData:
     newSection = sectionData()
     newSection.term = row['Term']
     newSection.title = row['Title']
     newSection.subject,newSection.courseNumber, newSection.sectionID = row['Name'].split(' ')
+    print(f'{newSection.subject},{newSection.courseNumber},{newSection.sectionID}')
+    #QUICK/DIRTY TESTING; THIS ISN'T STAYING
+    newSection.courseNumber = ''.join([char for char in newSection.courseNumber if not char in ('0','1','2','3','4','5','6','7','8','9')])
+    print('-'*100)
+    print(newSection.courseNumber)
+    print('-'*100)
+    #^this is leaving blanks now; don't have time now, but will debug on next commit. Exact error message:
+    #ValueError: invalid literal for int() with base 10: ''
+
     courseComps = stripCompetencies(row['Course Competencies Content'])
     [newSection.courseComps.append(competency(_competency)) for _competency in courseComps if _competency.strip() != '']
     sectionDataList.append(newSection)
