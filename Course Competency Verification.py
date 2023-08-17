@@ -130,7 +130,7 @@ with open('.env') as envFile:
 
 #gets our CSV file as list of dictionaries
 sectionsSource = envDict['sectionsSource']
-with open(sectionsSource,'r') as csvFile:
+with open(sectionsSource,'r',encoding='ISO-8859-1') as csvFile: #encoding is required for many CSV files
     csvData = [row for row in csv.DictReader(csvFile)]
 
 #now we generate a list of sectionData() objects, with courseCompetencies stripped
