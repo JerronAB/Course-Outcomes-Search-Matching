@@ -38,14 +38,14 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: supporting files
-        path: "D:\\a\\Course-Outcomes-Search-Match\\Course-Outcomes-Search-Match\\build"
+        path: "D:\\a\\Course-Outcomes-Search-Matching\\Course-Outcomes-Search-Matching\\build"
         retention-days: 14
 
     - name: Commit report
       run: |
-            powershell -command "cp 'D:\files\Course Competency Verification.exe' 'D:\a\Course-Outcomes-Search-Match\Course-Outcomes-Search-Match\Course Competency Verification.exe'"
+            powershell -command "cp 'D:\files\Course Competency Verification.exe' 'D:\a\Course-Outcomes-Search-Matching\Course-Outcomes-Search-Matching\Course Competency Verification.exe'"
             git config --global user.name 'JerronAB Action'
             git config --global user.email 'JerronAB@users.noreply.github.com'
-            git add "D:\a\Course-Outcomes-Search-Match\Course-Outcomes-Search-Match\Course Competency Verification.exe"
+            git add "D:\a\Course-Outcomes-Search-Matching\Course-Outcomes-Search-Matching\Course Competency Verification.exe"
             git commit -am "Auto-generated Windows Executable"
             git push
