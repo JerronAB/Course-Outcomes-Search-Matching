@@ -20,14 +20,14 @@ class sectionData(courseData):
         courseData.__init__(self)
         self.sectionID = ''
         self.matched = False
-    def dictionary(self,printType: str):
+    def dictionary(self):
         csvFormattedDict = {}
         csvFormattedDict['Course'] = f'{self.subject} {self.courseNumber} {self.sectionID}'
         csvFormattedDict['Title'] = self.title
         for num,_competency in enumerate(self.courseComps):
             csvFormattedDict[f"Competency {num}"] = _competency.competency
             csvFormattedDict[f"Competency {num} nearest match:"] = _competency.nearestCompetencyPercentage
-            csvFormattedDict[f"Competency {num} match %:"] = _competency.minPercentLD
+            csvFormattedDict[f"Competency {num} match %:"] = f'{(100-(_competency.minPercentLD*100)):.0f}'
         return csvFormattedDict
     def courseMatch(self, courseTitleStr,documentText=None) -> bool:
         #for courseTitleDigitsList: getting longest consecutive sequence of digits
@@ -42,17 +42,16 @@ class sectionData(courseData):
         if matched: self.matched = True
         if documentText is not None and matched: self.massTextCompComparison(documentText)
         return matched
-    def inlineCompetencyComparison(self,compareString):
-        #the "compareCompetency" method below takes care of keeping our best string
-        for _competency in self.courseComps: 
-            #print(f"RUNNING COMPARISON FOR: {_competency.competency[:40]} --> {compareString[:40]}")
-            _competency.compareCompetency(compareString)
     def massTextCompComparison(self,text):
         print("RUNNING MASS TEXT COMPARISON")
         #I thought it was better to have this take BOTH a list of strings and a single long string
         try: text = stripCompetencies(text)
         except: pass
         for line in text: self.inlineCompetencyComparison(line)
+    def inlineCompetencyComparison(self,compareString):
+        #the "compareCompetency" method below takes care of keeping our best string
+        for _competency in self.courseComps: 
+            _competency.compareCompetency(compareString)
 
 class competency():
     def __init__(self,competency_string) -> None:
