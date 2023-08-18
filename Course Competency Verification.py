@@ -20,6 +20,15 @@ class sectionData(courseData):
         courseData.__init__(self)
         self.sectionID = ''
         self.matched = False
+    def dictionary(self,printType: str):
+        csvFormattedDict = {}
+        csvFormattedDict['Course'] = f'{self.subject} {self.courseNumber} {self.sectionID}'
+        csvFormattedDict['Title'] = self.title
+        for num,_competency in enumerate(self.courseComps):
+            csvFormattedDict[f"Competency {num}"] = _competency.competency
+            csvFormattedDict[f"Competency {num} nearest match:"] = _competency.nearestCompetencyPercentage
+            csvFormattedDict[f"Competency {num} match %:"] = _competency.minPercentLD
+        return csvFormattedDict
     def courseMatch(self, courseTitleStr,documentText=None) -> bool:
         #for courseTitleDigitsList: getting longest consecutive sequence of digits
         #replace all non-digits with a space ' '
@@ -183,4 +192,6 @@ for title,doc in allDocuments:
     #[section.massTextCompComparison(doc) for section in sectionDataList if section.courseMatch(title)]
 
 [print(sect) for sect in sectionDataList if sect.matched]
-#NEXT STEPS: let's narrow this down to a single file with known matching strings, then see the output
+
+with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for many CSV files
+    [csv.DictWriter(csvFile,sectionObject.dictionary()) for sectionObject in sectionDataList]
