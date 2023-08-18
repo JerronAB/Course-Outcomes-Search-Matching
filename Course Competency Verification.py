@@ -21,7 +21,6 @@ class sectionData(courseData):
         self.sectionID = ''
         self.matched = False
     def courseMatch(self, courseTitleStr,documentText=None) -> bool:
-        print(f'Running courseMatch on {courseTitleStr}... ',end='')
         #for courseTitleDigitsList: getting longest consecutive sequence of digits
         #replace all non-digits with a space ' '
         #then, resplit that new string into a list of integers based on the spaces
@@ -31,7 +30,6 @@ class sectionData(courseData):
         while '' in courseTitleDigitsList: courseTitleDigitsList.remove('')
         courseTitleDigitsList = [int(number) for number in courseTitleDigitsList]
         matched = int(self.courseNumber) in courseTitleDigitsList and self.subject.lower() in courseTitleStr.lower()
-        print(f'Current course: {self.subject}{self.courseNumber} | Matched Course: {courseTitleStr}' if matched else 'Failed \r')
         if matched: self.matched = True
         if documentText is not None and matched: self.massTextCompComparison(documentText)
         return matched
