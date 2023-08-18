@@ -206,4 +206,4 @@ with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for man
     fieldnames.insert(0,'Course')
     fieldnames.insert(0,'Title')
     writer = csv.DictWriter(csvFile,fieldnames=fieldnames)
-    [writer(csvFile,sectionObject.dictionary()) for sectionObject in sectionDataList]
+    [writer.writerow(csvFile,sectionObject.dictionary()) for sectionObject in sectionDataList]
