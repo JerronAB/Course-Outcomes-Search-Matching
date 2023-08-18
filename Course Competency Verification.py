@@ -193,4 +193,17 @@ for title,doc in allDocuments:
 [print(sect) for sect in sectionDataList if sect.matched]
 
 with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for many CSV files
+    #this is terrible, but it works fine for getting our columnNames right
+    fieldnames = []
+    fieldnames1 = [f"Competency {i}" for i in range(1,41)]
+    fieldnames2 = [f"Competency {i} nearest match:" for i in range(1,41)]
+    fieldnames3 = [f"Competency {i} match %:" for i in range(1,41)]
+    for i in range(1,41):
+        fieldnames.append(fieldnames1[i])
+        fieldnames.append(fieldnames2[i])
+        fieldnames.append(fieldnames3[i])
+    print(fieldnames)
+    fieldnames.insert(0,'Course')
+    fieldnames.insert(0,'Title')
+    writer = csv.DictWriter(csvFile,fieldnames=fieldnames)
     [csv.DictWriter(csvFile,sectionObject.dictionary()) for sectionObject in sectionDataList]
