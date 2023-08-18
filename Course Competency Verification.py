@@ -198,7 +198,7 @@ with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for man
     fieldnames1 = [f"Competency {i}" for i in range(1,41)]
     fieldnames2 = [f"Competency {i} nearest match:" for i in range(1,41)]
     fieldnames3 = [f"Competency {i} match %:" for i in range(1,41)]
-    for i in range(1,41):
+    for i in range(0,40):
         fieldnames.append(fieldnames1[i])
         fieldnames.append(fieldnames2[i])
         fieldnames.append(fieldnames3[i])
