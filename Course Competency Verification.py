@@ -24,10 +24,10 @@ class sectionData(courseData):
         csvFormattedDict = {}
         csvFormattedDict['Course'] = f'{self.subject} {self.courseNumber} {self.sectionID}'
         csvFormattedDict['Title'] = self.title
-        for num,_competency in enumerate(self.courseComps):
-            csvFormattedDict[f"Competency {num}"] = _competency.competency
-            csvFormattedDict[f"Competency {num} nearest match:"] = _competency.nearestCompetencyPercentage
-            csvFormattedDict[f"Competency {num} match %:"] = f'{(100-(_competency.minPercentLD*100)):.0f}'
+        for num,_competency in enumerate(self.courseComps): #"num+1" is below so that our output starts at 1 in the CSV export
+            csvFormattedDict[f"Competency {num+1}"] = _competency.competency
+            csvFormattedDict[f"Competency {num+1} nearest match:"] = _competency.nearestCompetencyPercentage
+            csvFormattedDict[f"Competency {num+1} match %:"] = f'{(100-(_competency.minPercentLD*100)):.0f}'
         return csvFormattedDict
     def courseMatch(self, courseTitleStr,documentText=None) -> bool:
         #for courseTitleDigitsList: getting longest consecutive sequence of digits
@@ -205,5 +205,11 @@ with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for man
     print(fieldnames)
     fieldnames.insert(0,'Course')
     fieldnames.insert(0,'Title')
+    print(fieldnames)
     writer = csv.DictWriter(csvFile,fieldnames=fieldnames)
-    [writer.writerow(csvFile,sectionObject.dictionary()) for sectionObject in sectionDataList]
+    #[writer.writerow(sectionObject.dictionary()) for sectionObject in sectionDataList]
+    for s in sectionDataList:
+        try: writer.writerow(s.dictionary())
+        except UnicodeEncodeError: 
+            newDict = {key:value.encode('utf-8') for key,value in s.dictionary().items()}
+            writer.writerow(newDict)
