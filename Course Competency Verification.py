@@ -43,7 +43,7 @@ class sectionData(courseData):
         if documentText is not None and matched: self.massTextCompComparison(documentText)
         return matched
     def massTextCompComparison(self,text):
-        print("RUNNING MASS TEXT COMPARISON")
+        #print("RUNNING MASS TEXT COMPARISON")
         #I thought it was better to have this take BOTH a list of strings and a single long string
         try: text = stripCompetencies(text)
         except: pass
@@ -78,7 +78,7 @@ class competency():
         if LDPercent < self.minPercentLD or self.minPercentLD == -1.1:
             self.minPercentLD = LDPercent
             self.nearestCompetencyPercentage = compareString
-        if LDPercent < .2: print(f'\"{self.competency}\" against --> \n \"{compareString}\"\nPercentage of Characters requiring change: {(LDPercent*100):.0f}%')
+        #if LDPercent < .2: print(f'\"{self.competency}\" against --> \n \"{compareString}\"\nPercentage of Characters requiring change: {(LDPercent*100):.0f}%')
     def levenshtein_distance(self,compareString,originalString=None) -> int():
         t = compareString.lower()
         if originalString is None: s = self.competency.lower()
@@ -190,25 +190,26 @@ for title,doc in allDocuments:
         section.courseMatch(title,documentText=doc)
     #[section.massTextCompComparison(doc) for section in sectionDataList if section.courseMatch(title)]
 
-[print(sect) for sect in sectionDataList if sect.matched]
+#[print(sect) for sect in sectionDataList if sect.matched]
 
 with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for many CSV files
     #this is terrible, but it works fine for getting our columnNames right
     fieldnames = []
-    fieldnames1 = [f"Competency {i}" for i in range(1,41)]
-    fieldnames2 = [f"Competency {i} nearest match:" for i in range(1,41)]
-    fieldnames3 = [f"Competency {i} match %:" for i in range(1,41)]
-    for i in range(0,40):
+    fieldnames1 = [f"Competency {i}" for i in range(1,300)]
+    fieldnames2 = [f"Competency {i} nearest match:" for i in range(1,300)]
+    fieldnames3 = [f"Competency {i} match %:" for i in range(1,300)]
+    for i in range(len(fieldnames1)):
         fieldnames.append(fieldnames1[i])
         fieldnames.append(fieldnames2[i])
         fieldnames.append(fieldnames3[i])
-    print(fieldnames)
     fieldnames.insert(0,'Course')
     fieldnames.insert(0,'Title')
     print(fieldnames)
     writer = csv.DictWriter(csvFile,fieldnames=fieldnames)
+    writer.writeheader()
     #[writer.writerow(sectionObject.dictionary()) for sectionObject in sectionDataList]
     for s in sectionDataList:
+        print(s.dictionary())
         try: writer.writerow(s.dictionary())
         except UnicodeEncodeError: 
             newDict = {key:value.encode('utf-8') for key,value in s.dictionary().items()}
