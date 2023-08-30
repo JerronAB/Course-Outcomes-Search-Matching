@@ -128,22 +128,20 @@ with open('.env') as envFile:
 [print(f'{key}: {envDict[key]}') for key in envDict]
 
 #get our CSV file as list of dictionaries
+sectionDataList = []
 sectionsSource = envDict['sectionsSource']
 with open(sectionsSource,'r',encoding='ISO-8859-1') as csvFile: #encoding is required for many CSV files
-    csvData = [row for row in csv.DictReader(csvFile)]
-
-#now we generate a list of sectionData() objects, with courseCompetencies stripped of newlines and other content
-sectionDataList = []
-for row in csvData:
-    newSection = sectionData()
-    newSection.term = row['Term']
-    newSection.title = row['Title']
-    newSection.subject, newSection.courseNumber, newSection.sectionID = row['Name'].split(' ')
-    print(f'{newSection.subject},{newSection.courseNumber},{newSection.sectionID}')
-    newSection.courseNumber = ''.join([char for char in newSection.courseNumber if char in ('0','1','2','3','4','5','6','7','8','9')])
-    courseComps = stripCompetencies(row['Course Competencies Content'])
-    [newSection.courseComps.append(competency(_competency)) for _competency in courseComps if _competency.strip() != '']
-    sectionDataList.append(newSection)
+    for row in csv.DictReader(csvFile):
+        #now we generate a list of sectionData() objects, with courseCompetencies stripped of newlines and other content
+        newSection = sectionData()
+        newSection.term = row['Term']
+        newSection.title = row['Title']
+        newSection.subject, newSection.courseNumber, newSection.sectionID = row['Name'].split(' ')
+        print(f'{newSection.subject},{newSection.courseNumber},{newSection.sectionID}')
+        newSection.courseNumber = ''.join([char for char in newSection.courseNumber if char in ('0','1','2','3','4','5','6','7','8','9')])
+        courseComps = stripCompetencies(row['Course Competencies Content'])
+        [newSection.courseComps.append(competency(_competency)) for _competency in courseComps if _competency.strip() != '']
+        sectionDataList.append(newSection)
 
 #this is a function for grabbing info from a word document in the form of a tuple: ('document title (no extension)','document text (stripped)')
 import zipfile
@@ -162,11 +160,6 @@ def grabDocInfo(documentDirectory) -> ('title','docText'):
     docDir = documentDirectory.split('\\')
     docTitle = docDir[-1].replace('.docx','')
     return (docTitle,text)
-
-x = 'Identify elements of the oral communication process/model.'
-y = '1.	Identify elements of the oral communication process/model.'
-z = '1.	Identify elements of the oral communication process and/or model.'
-a = 'dentify elements of the oral communication processmodel'
 
 #trawling our docx files and grabbing their text content, along with titles
 sourceDir = envDict['courseDirectory']
