@@ -60,11 +60,6 @@ class competency():
         self.nearestCompetencyRawDistance = ''
         self.minLD = -1
         self.minPercentLD = -1.1
-    #I want to make my own levenshtein distance algorithm; maybe there are improvements available for our use-case 
-    #https://blog.paperspace.com/implementing-levenshtein-distance-word-autocomplete-autocorrect/#:~:text=The%20Levenshtein%20distance%20is%20a,transform%20one%20word%20into%20another.
-    #def levenshteinDistance(self,testString):
-    #    i = len(self.competency) + 1
-    #    j = len(testString) + 1
     def __repr__(self) -> str:
         return f'{self.competency} --> {self.nearestCompetencyPercentage}  | FIDELITY: {(100-(self.minPercentLD*100)):.0f}%\n'
     def __str__(self) -> str:
@@ -143,7 +138,7 @@ for row in csvData:
     newSection = sectionData()
     newSection.term = row['Term']
     newSection.title = row['Title']
-    newSection.subject,newSection.courseNumber, newSection.sectionID = row['Name'].split(' ')
+    newSection.subject, newSection.courseNumber, newSection.sectionID = row['Name'].split(' ')
     print(f'{newSection.subject},{newSection.courseNumber},{newSection.sectionID}')
     newSection.courseNumber = ''.join([char for char in newSection.courseNumber if char in ('0','1','2','3','4','5','6','7','8','9')])
     courseComps = stripCompetencies(row['Course Competencies Content'])
@@ -159,7 +154,6 @@ def grabDocInfo(documentDirectory) -> ('title','docText'):
     #https://github.com/nmolivo/tesu_scraper/blob/master/Python_Blogs/01_extract_from_MSWord.ipynb
     #specific to extracting information from word documents
     document = zipfile.ZipFile(documentDirectory)
-    #document
     #document.namelist()
     uglyXml = xml.dom.minidom.parseString(document.read('word/document.xml')).toprettyxml(indent='  ')
     text_re = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
@@ -185,14 +179,15 @@ allDocuments = tuple([grabDocInfo(file) for file in dir])
 #go through the tuple we made and all sections imported from CSV file
 #if the document info matches the sectionData, run a mass course competency comparison. 
 #this data is retained in each section
-for title,doc in allDocuments:
-    for section in sectionDataList:
+for section in sectionDataList:
+    for title,doc in allDocuments:
         section.courseMatch(title,documentText=doc)
-    #[section.massTextCompComparison(doc) for section in sectionDataList if section.courseMatch(title)]
 
-#[print(sect) for sect in sectionDataList if sect.matched]
+temp = [sect.__str__() for sect in sectionDataList if sect.matched]
+with open(envDict['reportOutput'].replace(".csv",".txt"),'wa+') as txtfile:
+    txtfile.write(';'.join(temp))
 
-with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for many CSV files
+'''with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for many CSV files
     #this is terrible, but it works fine for getting our columnNames right
     fieldnames = []
     fieldnames1 = [f"Competency {i}" for i in range(1,300)]
@@ -211,6 +206,6 @@ with open(envDict['reportOutput'],'w') as csvFile: #encoding is required for man
     for s in sectionDataList:
         print(s.dictionary())
         try: writer.writerow(s.dictionary())
-        except UnicodeEncodeError: 
+        except UnicodeEncodeError:
             newDict = {key:value.encode('utf-8') for key,value in s.dictionary().items()}
-            writer.writerow(newDict)
+            writer.writerow(newDict)'''
